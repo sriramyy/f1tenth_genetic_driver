@@ -4,6 +4,8 @@ An autonomous racing algorithm that combines the **Follow the Gap** (FTG) with *
 
 *Note: This Algorithm requires using the `f1tenth_gym_ros` simulator*
 
+This comes from my f1tenth repository, can be found [here](https://github.com/sriramyy/sy-f1tenth/)
+
 ## Prerequisites
 
 - `f1tenth_gym_ros` simulator installed and running
