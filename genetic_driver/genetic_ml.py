@@ -3,19 +3,22 @@ import copy
 import numpy as np
 from .parameters import GeneticParameters
 
-# lap class to store individual lap information
+
 class Lap:
+    """lap class to store individual lap information"""
     def __init__(self, time, crash_count):
         self.time = time
         self.crash_count = crash_count
 
-# genome represents a single candidate driver config
+
 class Genome:
+    """genome represents a single candidate driver config"""
     def __init__(self, genome_id, params):
         self.id = genome_id
         self.params: GeneticParameters = params
         self.fitness_score = 0.0
         self.laps : Lap | list[Lap] = []
+
 
 class GeneticML:
     def __init__(self, population_size=20, generations=50):
@@ -29,10 +32,11 @@ class GeneticML:
         self.overall_best_genome : Genome | None = None
 
         # current gen ppool
-        self.population = [] # population of genomes
-        self.history = []    # history of our populations
+        self.population : list[Genome] = []   # population of genomes
+        self.history: list[list[Genome]] = [] # history of our populations
 
         self.init_population()
+
 
     def init_population(self):
         """Creates the first generation"""
@@ -48,12 +52,14 @@ class GeneticML:
             p = self.mutate(p) # mutate to create diversiy in first batch
             self.population.append(Genome(i,p))
 
-    def get_next_genome_params(self):
+
+    def get_next_genome_params(self) -> GeneticParameters:
         """returns GeneticParameter object for current test run"""
         if self.current_genome_index < len(self.population):
             return self.population[self.current_genome_index].params
         return self.population[0].params
-    
+
+
     def report_lap_result(self, time, crash_count):
         """called after lap is finished to record it"""
         if self.current_genome_index >= len(self.population):
@@ -73,19 +79,22 @@ class GeneticML:
 
         self.current_genome_index += 1
 
+
     def calculate_fitness(self, time, crash_count):
         """calc the fitness score of lap"""
-        if time <= 0.1:
+        if time <= 1: # time deemed too little for a valid lap (CUTOFF TIME)
             return -1000.0
         
         speed_score = 1000.0 / time
         penalty = float(crash_count) * 500.0 # big penalty for hitting wall
 
         return speed_score - penalty
-    
-    def is_generation_complete(self):
+
+
+    def is_generation_complete(self) -> bool:
         return self.current_genome_index >= len(self.population)
-    
+
+
     def evolve_next_generation(self):
         """creates the next generation"""
         if self.current_generation >= self.max_generations:
@@ -115,8 +124,8 @@ class GeneticML:
         while len(next_gen) < self.population_size:
             # pick 2 from top 50%
             limit = self.population_size//2
-            p1 = self.population[random.randint(0, limit)].params
-            p2 = self.population[random.randint(0, limit)].params
+            p1 : GeneticParameters = self.population[random.randint(0, limit)].params
+            p2 : GeneticParameters = self.population[random.randint(0, limit)].params
 
             # crossover
             child_params = self.crossover(p1, p2)
@@ -132,7 +141,8 @@ class GeneticML:
         self.current_generation += 1
         self.current_genome_index = 0
 
-    def crossover(self, p1, p2):
+
+    def crossover(self, p1:GeneticParameters, p2:GeneticParameters) -> GeneticParameters:
         """mixes (crosseS) genes from two parents"""
         child = copy.deepcopy(p1)
 
@@ -143,8 +153,9 @@ class GeneticML:
                 setattr(child, attr, getattr(p2, attr))
         
         return child
-    
-    def mutate(self, p):
+
+
+    def mutate(self, p:GeneticParameters) -> GeneticParameters:
         """Randomly tweaks parameters to discover new behaviors."""
         rate = 0.3  # 30% chance for any gene to change
         

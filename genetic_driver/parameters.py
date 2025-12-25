@@ -29,3 +29,16 @@ class GeneticParameters:
         for key, value in p_dict.items():
             if hasattr(self, key):
                 setattr(self, key, value)
+
+
+    def to_list(self, round_digits=3) -> list:
+        """function that returns the parameters in a printable array list"""
+        gene_list = []
+
+        for key, value in vars(self).items():
+            if isinstance(value, float): 
+                gene_list.append(round(value, round_digits))
+            else:
+                gene_list.append(value) 
+
+        return gene_list

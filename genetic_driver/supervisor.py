@@ -11,7 +11,7 @@ import numpy as np
 import threading
 import sys
 
-from .genetic_ml import GeneticML
+from .genetic_ml import GeneticML, Genome
 
 class GeneticSupervisor(Node):
     def __init__(self):
@@ -35,8 +35,10 @@ class GeneticSupervisor(Node):
         self.max_lap_time = 40.0 # Seconds before we kill a slow run
         
         self.get_logger().info("Genetic Supervisor Initiated. Starting...")
-        print("NOTE: Press 'f' + Enter to view Fastest/Best Genome Stats mid-simulation.")
-        print("NOTE: press 'r' + Enter for a manual reset")
+        print("NOTES: Press 'f' + Enter to view Fastest/Best Genome Stats mid-simulation.")
+        print("       Press 'r' + Enter for a manual reset")
+        print("       Press 'h' + Enter for full valid lap detailed history")
+        print("       Press 't' + Enter for valid lap time data")
 
         # interactive kb to be able to see stats mid run
         self.input_thread = threading.Thread(target=self.keyboard_listener, daemon=True)
@@ -48,14 +50,14 @@ class GeneticSupervisor(Node):
 
 
     def keyboard_listener(self):
-        """runs in background: waits for user to press 'f' + enter or 'r' + enter"""
+        """runs in background: waits for user to enter specifickey"""
         while True:
             try:
                 cmd = sys.stdin.readline().strip()
-                if cmd.lower() == 'f':
+                if cmd.lower() == 'f': # PRINT BEST RECORD
                     self.print_best_record()
                 
-                if cmd.lower() == 'r':
+                if cmd.lower() == 'r': # MANUAL RESET
                     # Calculate time driven
                     run_time = time.time() - self.start_time
                     
@@ -63,10 +65,46 @@ class GeneticSupervisor(Node):
                     self.finish_run(run_time, crash_count=1)
                     
                     print(f"\n 💥 MANUAL RESET (CRASH)")
+
+                if cmd.lower() == 't': # TIME HISTORY
+                    self.print_time_history()
+
+                if cmd.lower() == 'h': # DETAILED HISTORY
+                    self.print_history()
             
             except Exception:
                 break
     
+
+    def print_history(self):
+        """prints the detailed history of valid laptimes on request"""
+
+        print(f"Printing history upto {self.ga.current_generation}")
+
+        for gen_num, population in enumerate(self.ga.history, start=1):
+            for genome in population:
+                genome : Genome
+                # each genome has only 1 lap. (support for multiple)
+
+                # get the params of the genome in a printable list
+                gene_list = genome.params.to_list(5)
+
+                for lap in genome.laps:
+                    if lap.crash_count == 0 and lap.time > 0.5:
+                        print(f"Gen {gen_num} | Genome {genome.id}, Params: {gene_list} | Time: {lap.time} s | Score: {genome.fitness_score}")
+
+
+    def print_time_history(self):
+        """prints the time history of valid laptimes"""
+
+        print(f"Printing time history upto {self.ga.current_generation}")
+
+        for gen_num, population in enumerate(self.ga.history, start=1):
+            for genome in population:
+                for lap in genome.laps:
+                    if lap.crash_count == 0 and lap.time > 0.5:
+                        print(f"Gen {gen_num} | Genome {genome.id} | {lap.time} s")
+
 
     def print_best_record(self):
         """prints the best record on request (f in console)"""
@@ -76,14 +114,7 @@ class GeneticSupervisor(Node):
             print(f"\n 🏆 CURRENT CHAMPION: None")
         else:
             lap_time = best.laps[-1].time if best.laps else 999.9
-            gene_list = []
-
-            for key, value in vars(best.params).items():
-            # if float then round to 3 decimals
-                if isinstance(value, float): 
-                    gene_list.append(round(value, 3))
-                else:
-                    gene_list.append(value)
+            gene_list = best.params.to_list()
 
             print(f"\n 🏆 CURRENT CHAMPION (As of Generation {self.ga.current_generation})")
             print(f"     GenomeID : {best.id}")
@@ -125,16 +156,7 @@ class GeneticSupervisor(Node):
         gen = self.ga.current_generation
         
         print(f"\n 🚀 STARTING: Genome {idx} (Gen {gen})")
-
-        # also print the genomes for reference
-        gene_list = []
-        for key, value in param_dict.items():
-            # if float then round to 3 decimals
-            if isinstance(value, float): 
-                gene_list.append(round(value, 3))
-            else:
-                gene_list.append(value)
-        print(f"\n 🧬 Genes: {gene_list}")
+        print(f"\n 🧬 Genes: {params.to_list()}")
 
 
     def reset_simulation(self):
