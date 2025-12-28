@@ -62,6 +62,7 @@ While the algorithm is running, you can interact via the supervisor terminal:
 - **Press `r` + Enter**: Manually reset the current simulation run
 - **Press `t` + Enter**: Print recent valid lap times to console
 - **Press `h` + Enter**: Write detailed valid-lap history to `log/full_history.txt` (overwrites each time)
+  - Log file will be located in the container directory: `/sim_ws/install/genetic_driver/lib/python3.8/site-packages/log/full_history.txt`
 
 Example output:
 ```
