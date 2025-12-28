@@ -3,7 +3,7 @@ import numpy as np
 class GeneticParameters:
     def __init__(self):
 # Follow the Gap Params
-        self.BUBBLE_RADIUS = 170 # BUBBLE SIZE
+        self.BUBBLE_RADIUS = 160 # BUBBLE SIZE
         self.PREPROCESS_CONV_SIZE = 3
         self.BEST_POINT_CONV_SIZE = 120
         self.MAX_LIDAR_DIST = 10.0 # LOOK AHEAD
@@ -15,7 +15,7 @@ class GeneticParameters:
         self.SPEED_MAX = 5.5
 
         # Handling
-        self.CENTER_BIAS_ALPHA = 0.35
+        self.CENTER_BIAS_ALPHA = 0.5
         self.EDGE_GUARD_DEG = 12.0
         self.TTC_HARD_BRAKE = 0.55
         self.TTC_SOFT_BRAKE = 0.9
@@ -36,9 +36,9 @@ class GeneticParameters:
         gene_list = []
 
         for key, value in vars(self).items():
-            if isinstance(value, float): 
+            if isinstance(value, float):
                 gene_list.append(round(value, round_digits))
             else:
-                gene_list.append(value) 
+                gene_list.append(value)
 
         return gene_list
