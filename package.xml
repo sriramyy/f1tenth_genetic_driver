@@ -5,6 +5,9 @@
   <version>0.0.0</version>
   <description>Genetic ML Driver for F1TENTH</description>
 
+  <maintainer email="sriram.yerramsetty1@gmail.com">Sriram Yerramsetty</maintainer>
+  <license>MIT</license>
+
   <depend>rclpy</depend>
   <depend>std_msgs</depend>
   <depend>geometry_msgs</depend>

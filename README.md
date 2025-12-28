@@ -60,6 +60,8 @@ While the algorithm is running, you can interact via the supervisor terminal:
 
 - **Press `f` + Enter**: View current champion genome stats (fastest lap)
 - **Press `r` + Enter**: Manually reset the current simulation run
+- **Press `t` + Enter**: Print recent valid lap times to console
+- **Press `h` + Enter**: Write detailed valid-lap history to `log/full_history.txt` (overwrites each time)
 
 Example output:
 ```

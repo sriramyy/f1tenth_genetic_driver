@@ -3,11 +3,11 @@ import numpy as np
 class GeneticParameters:
     def __init__(self):
 # Follow the Gap Params
-        self.BUBBLE_RADIUS = 130
+        self.BUBBLE_RADIUS = 170 # BUBBLE SIZE
         self.PREPROCESS_CONV_SIZE = 3
         self.BEST_POINT_CONV_SIZE = 120
-        self.MAX_LIDAR_DIST = 7.0
-        self.MAX_STEER_ABS = 0.698  # Approx 40 degrees
+        self.MAX_LIDAR_DIST = 10.0 # LOOK AHEAD
+        self.MAX_STEER_ABS = 0.7  # Approx 40 degrees
 
         # Speeds
         self.STRAIGHT_SPEED = 4.426

@@ -5,6 +5,7 @@ from std_msgs.msg import String
 from geometry_msgs.msg import PoseWithCovarianceStamped
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import LaserScan
+from pathlib import Path
 import json
 import time
 import numpy as np
@@ -32,7 +33,7 @@ class GeneticSupervisor(Node):
         # State Variables
         self.start_time = time.time()
         self.is_running = False
-        self.max_lap_time = 40.0 # Seconds before we kill a slow run
+        self.max_lap_time = 150.0 # Seconds before we kill a slow run # MAX TIME
         
         self.get_logger().info("Genetic Supervisor Initiated. Starting...")
         print("NOTES: Press 'f' + Enter to view Fastest/Best Genome Stats mid-simulation.")
@@ -77,9 +78,17 @@ class GeneticSupervisor(Node):
     
 
     def print_history(self):
-        """prints the detailed history of valid laptimes on request"""
+        """uploads the detailed history of valid laptimes on request to the log directory"""
+        print(f"Uploading to log directory...")
 
-        print(f"Printing history upto {self.ga.current_generation}")
+        log_dir = Path(__file__).resolve().parent.parent / "log"
+        log_dir.mkdir(exist_ok=True)
+        log_file = log_dir / "full_history.txt"
+
+        lines = [
+            f"Printing history upto {self.ga.current_generation}",
+            "[Gen, Genome] | [Params] | [Time] | [Score]"
+        ]
 
         for gen_num, population in enumerate(self.ga.history, start=1):
             for genome in population:
@@ -91,19 +100,24 @@ class GeneticSupervisor(Node):
 
                 for lap in genome.laps:
                     if lap.crash_count == 0 and lap.time > 0.5:
-                        print(f"Gen {gen_num} | Genome {genome.id}, Params: {gene_list} | Time: {lap.time} s | Score: {genome.fitness_score}")
+                        lines.append(f"{gen_num}, {genome.id} | {gene_list} | {lap.time} | {genome.fitness_score}")
+
+        log_file.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+        print(f"Wrote history to log/full_history.txt!")
 
 
     def print_time_history(self):
         """prints the time history of valid laptimes"""
 
         print(f"Printing time history upto {self.ga.current_generation}")
+        print(f"[Gen, Genome] | [Time]") 
 
         for gen_num, population in enumerate(self.ga.history, start=1):
             for genome in population:
                 for lap in genome.laps:
                     if lap.crash_count == 0 and lap.time > 0.5:
-                        print(f"Gen {gen_num} | Genome {genome.id} | {lap.time} s")
+                        print(f"{gen_num}, {genome.id} | {lap.time}")
 
 
     def print_best_record(self):

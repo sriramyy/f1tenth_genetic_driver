@@ -112,7 +112,7 @@ class GeneticFollowGap(Node):
 
     def index_to_steer(self, idx, length):
         angle = (idx - (length / 2.0)) * self.radians_per_elem
-        return float(np.clip(angle / 2, -self.params.MAX_STEER_ABS, self.params.MAX_STEER_ABS))
+        return float(np.clip(angle / 1.8, -self.params.MAX_STEER_ABS, self.params.MAX_STEER_ABS)) # change angle / x for tigheter turns
 
     def smooth_and_limit_steer(self, steer):
         s = (1.0 - self.params.STEER_SMOOTH_ALPHA) * steer + self.params.STEER_SMOOTH_ALPHA * self.prev_steer
