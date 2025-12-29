@@ -2,7 +2,7 @@
 
 An autonomous racing algorithm that combines the **Follow the Gap** (FTG) with **Genetic Algorithm optimization** to evolve optimal driving parameters for F1TENTH race cars in simulation.
 
-*Note: This Algorithm requires using the `f1tenth_gym_ros` simulator*
+Note: This Algorithm **requires** using the `f1tenth_gym_ros` simulator, you can find it **[here](https://github.com/f1tenth/f1tenth_gym_ros)**
 
 This comes from my f1tenth repository, can be found [here](https://github.com/sriramyy/sy-f1tenth/)
 
